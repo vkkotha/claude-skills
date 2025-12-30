@@ -1,0 +1,10 @@
+{
+  "name": "bitbucket-pr-reviewer",
+  "version": "1.0.0",
+  "description": "Review Bitbucket pull requests with AI-powered analysis and inline comments",
+  "dependencies": {
+    "required": ["mcp-setup"],
+    "optional": ["pr-worktree"]
+  },
+  "mcpTemplate": "bitbucket-datacenter"
+}

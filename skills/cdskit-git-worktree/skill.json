@@ -1,0 +1,17 @@
+{
+  "name": "cdskit-git-worktree",
+  "version": "1.0.0",
+  "description": "Create isolated git worktrees for reviewing pull requests, branches, tags, or commits",
+  "dependencies": {
+    "required": [],
+    "optional": []
+  },
+  "systemRequirements": [
+    "git",
+    "bash"
+  ],
+  "scripts": [
+    "setup-worktree.sh",
+    "cleanup-worktree.sh"
+  ]
+}

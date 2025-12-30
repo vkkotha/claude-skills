@@ -1,0 +1,13 @@
+{
+  "name": "mcp-setup",
+  "version": "1.0.0",
+  "description": "Configure and troubleshoot MCP servers for Claude Code",
+  "dependencies": {
+    "required": [],
+    "optional": []
+  },
+  "templates": [
+    "bitbucket-datacenter",
+    "bitbucket-cloud"
+  ]
+}
