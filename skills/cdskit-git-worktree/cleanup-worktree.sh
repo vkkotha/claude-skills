@@ -142,6 +142,23 @@ generate_names
 
 echo "Cleaning up worktree for ${REF_TYPE}: ${REF_VALUE}..."
 
+# Check if we're currently inside the worktree we're trying to remove
+CURRENT_DIR=$(pwd)
+WORKTREE_ABSOLUTE_PATH=$(cd "$WORKTREE_PATH" 2>/dev/null && pwd || echo "")
+
+if [ -n "$WORKTREE_ABSOLUTE_PATH" ] && [[ "$CURRENT_DIR" == "$WORKTREE_ABSOLUTE_PATH"* ]]; then
+    echo ""
+    echo "Error: Cannot remove worktree while inside it."
+    echo "You are currently in: $CURRENT_DIR"
+    echo "Worktree to remove:   $WORKTREE_ABSOLUTE_PATH"
+    echo ""
+    echo "Please change to a different directory first:"
+    echo "  cd <main-repo-path>"
+    echo ""
+    echo "Or use the open-main-worktree.sh script to switch to the main repository."
+    exit 1
+fi
+
 # Remove the worktree if it exists
 if git worktree list | grep -q "${FOLDER_NAME}"; then
     echo "Removing worktree at ${WORKTREE_PATH}..."
