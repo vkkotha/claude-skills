@@ -19,44 +19,27 @@ A git worktree allows you to check out multiple branches/refs simultaneously in 
 
 - **Git** (with worktree support - Git 2.5+)
 - **Bash** (Git Bash on Windows, native on macOS/Linux)
-- **Editor** (optional): VSCode, Cursor, Windsurf, or any editor with CLI support
+- **Claude Code** running in VS Code, JetBrains IDE, or CLI
 
 ## Instructions
 
 ### Setting Up a Worktree
 
-When the user wants to inspect code locally:
+When the user wants to inspect code locally, **run the setup script** with the appropriate ref type. The script auto-detects the IDE context and opens appropriately:
 
-1. **Ask for editor preference** using AskUserQuestion:
-   ```
-   How would you like to open the worktree?
+```bash
+# macOS/Linux (global install)
+"$HOME/.claude/skills/cdskit-git-worktree/setup-worktree.sh" --pr <NUMBER>
+"$HOME/.claude/skills/cdskit-git-worktree/setup-worktree.sh" --branch <NAME>
+"$HOME/.claude/skills/cdskit-git-worktree/setup-worktree.sh" --tag <NAME>
+"$HOME/.claude/skills/cdskit-git-worktree/setup-worktree.sh" --commit <SHA>
 
-   Question 1 - Editor:
-   1. Auto-detect - Use first available (VSCode, Cursor, Windsurf) (Recommended)
-   2. VSCode - Use VSCode specifically
-   3. Cursor - Use Cursor specifically
-   4. Windsurf - Use Windsurf specifically
-   5. Terminal only - Don't open any editor
+# Local install (if using --local during installation)
+./.claude/skills/cdskit-git-worktree/setup-worktree.sh --pr <NUMBER>
 
-   Question 2 - Window mode (if not "Terminal only"):
-   1. New window - Open in a new editor window (Recommended)
-   2. Current window - Reuse current editor window
-   ```
-
-2. **Run the setup script** with the appropriate ref type:
-   ```bash
-   # macOS/Linux
-   ./.claude/skills/cdskit-git-worktree/setup-worktree.sh --pr <NUMBER>
-   ./.claude/skills/cdskit-git-worktree/setup-worktree.sh --branch <NAME>
-   ./.claude/skills/cdskit-git-worktree/setup-worktree.sh --tag <NAME>
-   ./.claude/skills/cdskit-git-worktree/setup-worktree.sh --commit <SHA>
-
-   # Windows CMD/PowerShell (with Git for Windows)
-   bash ./.claude/skills/cdskit-git-worktree/setup-worktree.sh --pr <NUMBER>
-
-   # Windows with WSL
-   wsl bash ./.claude/skills/cdskit-git-worktree/setup-worktree.sh --pr <NUMBER>
-   ```
+# Windows CMD/PowerShell (with Git Bash)
+bash "%USERPROFILE%\.claude\skills\cdskit-git-worktree\setup-worktree.sh" --pr <NUMBER>
+```
 
 ### Script Arguments
 
@@ -66,41 +49,58 @@ When the user wants to inspect code locally:
 | `--branch <NAME>` | Branch name (local or remote) |
 | `--tag <NAME>` | Tag name |
 | `--commit <SHA>` | Commit SHA (full or abbreviated) |
-| `--editor <MODE>` | How to open editor: `new` (default), `reuse`, `skip` |
-| `--editor-cmd <CMD>` | Editor command: `auto` (default), `code`, `cursor`, `windsurf`, or custom |
+| `--editor <MODE>` | How to open: `auto` (default), `skip` |
+| `--editor-cmd <CMD>` | Override editor: `code`, `idea`, `claude`, or custom |
+
+### IDE Auto-Detection
+
+The script automatically detects your IDE context:
+
+| Context | Detection | Opens With |
+|---------|-----------|------------|
+| VS Code | `VSCODE_*` env vars, `TERM_PROGRAM=vscode` | `code` command |
+| JetBrains | `IDEA_*`, `JETBRAINS_*` env vars | `idea` (or specific IDE) |
+| CLI | Default fallback | `claude` (new CLI session) |
 
 ### Examples
 
 ```bash
-# PR worktree (auto-detect editor, new window)
+# PR worktree (auto-detects IDE and opens)
 ./setup-worktree.sh --pr 558
 
-# Branch worktree with specific editor
-./setup-worktree.sh --branch feature/login --editor-cmd cursor
+# Branch worktree with specific editor override
+./setup-worktree.sh --branch feature/login --editor-cmd idea
 
 # Tag worktree, no editor
 ./setup-worktree.sh --tag v1.2.3 --editor skip
 
-# Commit worktree, reuse current window
-./setup-worktree.sh --commit abc123def --editor reuse
+# Commit worktree, force Claude Code CLI
+./setup-worktree.sh --commit abc123def --editor-cmd claude
 ```
 
 ### What the Script Does
 
 1. **Fetches the ref** from the correct remote (handles fork setups with upstream)
 2. **Creates a worktree** at `../<project>.worktrees/<folder-name>`
-3. **Opens your editor** (based on preference) or provides manual instructions
+3. **Auto-detects IDE** and opens the worktree (VS Code, JetBrains, or Claude CLI)
+
+**Branch handling:**
+- **Local branches:** Used directly without modification (your existing branches are preserved)
+- **Remote branches:** Creates a `worktree-branch-<name>` branch to avoid modifying your local branches
+- **PRs:** Creates a `worktree-pr-<number>` branch
+- **Tags/Commits:** Use detached HEAD (read-only inspection)
 
 ### Worktree Locations
 
 Worktrees are created with prefixed folder names to avoid collisions:
 
-| Ref Type | Example Input | Folder Name |
-|----------|---------------|-------------|
-| PR | `--pr 558` | `PR-558` |
-| Branch | `--branch feature/login` | `branch-feature-login` |
-| Tag | `--tag v1.2.3` | `tag-v1.2.3` |
-| Commit | `--commit abc123def` | `commit-abc123de` |
+| Ref Type | Example Input | Folder Name | Branch Created |
+|----------|---------------|-------------|----------------|
+| PR | `--pr 558` | `PR-558` | `worktree-pr-558` |
+| Branch (local) | `--branch feature/login` | `branch-feature-login` | *(uses existing branch)* |
+| Branch (remote) | `--branch feature/login` | `branch-feature-login` | `worktree-branch-feature-login` |
+| Tag | `--tag v1.2.3` | `tag-v1.2.3` | *(detached HEAD)* |
+| Commit | `--commit abc123def` | `commit-abc123de` | *(detached HEAD)* |
 
 All worktrees are created under:
 ```
@@ -116,28 +116,46 @@ For example, if your project is at `/home/user/myapp`:
 └── commit-abc123de/
 ```
 
+### Navigating Back to Main Worktree
+
+When the user is in a worktree and wants to go back to the main repository (e.g., "open main worktree", "go back to main repo"):
+
+```bash
+# Auto-detects IDE and opens main worktree
+"$HOME/.claude/skills/cdskit-git-worktree/open-main-worktree.sh"
+
+# Skip opening, just show path
+"$HOME/.claude/skills/cdskit-git-worktree/open-main-worktree.sh" skip
+
+# Force specific editor
+"$HOME/.claude/skills/cdskit-git-worktree/open-main-worktree.sh" auto idea
+```
+
+**How it works:** Git tracks the main worktree (the original clone location) and `git worktree list` always shows it first. This works from any worktree in the same repository.
+
 ### Cleaning Up a Worktree
 
 After the review is complete, clean up with:
 
 ```bash
-# macOS/Linux
-./.claude/skills/cdskit-git-worktree/cleanup-worktree.sh --pr <NUMBER>
-./.claude/skills/cdskit-git-worktree/cleanup-worktree.sh --branch <NAME>
-./.claude/skills/cdskit-git-worktree/cleanup-worktree.sh --tag <NAME>
-./.claude/skills/cdskit-git-worktree/cleanup-worktree.sh --commit <SHA>
+# macOS/Linux (global install)
+"$HOME/.claude/skills/cdskit-git-worktree/cleanup-worktree.sh" --pr <NUMBER>
+"$HOME/.claude/skills/cdskit-git-worktree/cleanup-worktree.sh" --branch <NAME>
+"$HOME/.claude/skills/cdskit-git-worktree/cleanup-worktree.sh" --tag <NAME>
+"$HOME/.claude/skills/cdskit-git-worktree/cleanup-worktree.sh" --commit <SHA>
 
-# Windows CMD/PowerShell (with Git for Windows)
-bash ./.claude/skills/cdskit-git-worktree/cleanup-worktree.sh --pr <NUMBER>
-
-# Windows with WSL
-wsl bash ./.claude/skills/cdskit-git-worktree/cleanup-worktree.sh --pr <NUMBER>
+# Windows CMD/PowerShell (with Git Bash)
+bash "%USERPROFILE%\.claude\skills\cdskit-git-worktree\cleanup-worktree.sh" --pr <NUMBER>
 ```
+
+**Options:**
+- `--yes` or `-y`: Skip confirmation prompts
 
 This will:
 - Remove the worktree directory
-- Delete the local branch (for PRs and branches)
 - Prune stale worktree references
+- **Ask for confirmation** before deleting any `worktree-*` branches created by this skill
+- **Never delete** your existing local branches (only `worktree-*` prefixed branches are candidates for deletion)
 
 ## Platform Detection
 
@@ -175,15 +193,14 @@ chmod +x ./.claude/skills/cdskit-git-worktree/*.sh
 ### Editor Not Opening
 
 1. Ensure the editor CLI is in your PATH:
-   - **VSCode:** Command Palette → "Shell Command: Install 'code' command in PATH"
-   - **Cursor:** Command Palette → "Shell Command: Install 'cursor' command in PATH"
-   - **Windsurf:** Settings → Install 'windsurf' command in PATH
+   - **VS Code:** Command Palette → "Shell Command: Install 'code' command in PATH"
+   - **JetBrains:** Tools → Create Command-line Launcher
 
 2. Use `--editor skip` and open manually:
    ```bash
    ./setup-worktree.sh --pr 558 --editor skip
    cd ../myproject.worktrees/PR-558
-   code .
+   code .   # or: idea . / claude
    ```
 
 ### Worktree Already Exists
@@ -211,6 +228,7 @@ git worktree prune
 | Setup branch worktree | `./setup-worktree.sh --branch feature/x` |
 | Setup tag worktree | `./setup-worktree.sh --tag v1.0.0` |
 | Setup commit worktree | `./setup-worktree.sh --commit abc123` |
+| Open main worktree | `./open-main-worktree.sh` |
 | Cleanup worktree | `./cleanup-worktree.sh --pr 558` |
 | List worktrees | `git worktree list` |
 | Prune stale | `git worktree prune` |

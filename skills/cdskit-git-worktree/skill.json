@@ -12,6 +12,7 @@
   ],
   "scripts": [
     "setup-worktree.sh",
-    "cleanup-worktree.sh"
+    "cleanup-worktree.sh",
+    "open-main-worktree.sh"
   ]
 }

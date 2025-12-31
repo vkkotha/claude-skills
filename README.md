@@ -148,7 +148,7 @@ Foundation skill for configuring MCP (Model Context Protocol) servers. Includes:
 Git utility for creating isolated worktrees. Features:
 - Supports PRs, branches, tags, and commits
 - Cross-platform (macOS, Linux, Windows via Git Bash/WSL)
-- Auto-detect editors (VSCode, Cursor, Windsurf)
+- Auto-detects IDE context (VS Code, JetBrains, Claude Code CLI)
 - Bitbucket and GitHub PR refs support
 
 ### bitbucket-pr-reviewer
