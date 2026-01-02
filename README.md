@@ -1,155 +1,108 @@
-# Claude Developer Skills Kit (cdskit)
+# Claude Skills
 
-A collection of reusable developer productivity skills for [Claude Code](https://claude.ai/claude-code) - Anthropic's official CLI for Claude.
+A Claude Code plugin providing developer productivity skills for Bitbucket PR review and git worktree management.
 
 ## Available Skills
 
-| Skill | Description | Dependencies |
-|-------|-------------|--------------|
-| [cdskit-mcp-setup](./skills/cdskit-mcp-setup/) | Configure and troubleshoot MCP servers for Claude Code | None |
-| [cdskit-git-worktree](./skills/cdskit-git-worktree/) | Create isolated git worktrees for PRs, branches, tags, or commits | None |
-| [cdskit-bitbucket-pr-reviewer](./skills/cdskit-bitbucket-pr-reviewer/) | Review Bitbucket PRs with AI-powered analysis and inline comments | mcp-setup |
+| Skill | Description |
+|-------|-------------|
+| [bitbucket-pr-reviewer](./skills/bitbucket-pr-reviewer/) | Review Bitbucket PRs with AI-powered analysis and inline comments |
+| [git-worktree](./skills/git-worktree/) | Create isolated git worktrees for PRs, branches, tags, or commits |
 
-## Quick Start
+## Installation
+
+### Quick Install (Recommended)
+
+```bash
+# Add the marketplace
+/plugin marketplace add https://github.com/vkkotha/claude-skills
+
+# Install the plugin
+/plugin install claude-skills@claude-skills-marketplace
+```
+
+### Development Mode
+
+For testing or development, load the plugin directly without installing:
 
 ```bash
 # Clone the repository
 git clone https://github.com/vkkotha/claude-skills.git
-cd claude-skills
 
-# List available skills
-./install.sh --list
-
-# Install all skills globally
-./install.sh --all
-
-# Or install specific skills
-./install.sh bitbucket-pr-reviewer
+# Run Claude Code with the plugin
+claude --plugin-dir ./claude-skills
 ```
 
-## Installation
+## Post-Installation Setup
 
-### Using the Installer (Recommended)
+After installing, run the help command for detailed configuration instructions:
 
-The installer handles dependencies and applies a configurable prefix to skill names.
+```
+/claude-skills:help
+```
 
+**Important:** This plugin includes two Bitbucket MCP servers. Disable the one you don't need:
+
+1. Run `/mcp` in Claude Code
+2. Toggle off the server you don't use:
+   - `bitbucket-cloud` - For Bitbucket Cloud (bitbucket.org)
+   - `bitbucket-datacenter` - For self-hosted Bitbucket Server
+
+## Configuration
+
+### Bitbucket MCP Server
+
+This plugin includes two [Bitbucket MCP server](https://github.com/vkkotha/bitbucket-mcp-server) configurations:
+
+| Server | Use Case | MCP Tools Prefix |
+|--------|----------|------------------|
+| `bitbucket-cloud` | Bitbucket Cloud (bitbucket.org) | `mcp__bitbucket-cloud__` |
+| `bitbucket-datacenter` | Bitbucket Server/Data Center | `mcp__bitbucket-datacenter__` |
+
+Enable the one you need by setting the appropriate environment variables:
+
+**For Bitbucket Cloud:**
 ```bash
-# Install all skills with default prefix (cdskit-)
-./install.sh --all
-
-# Install specific skills
-./install.sh bitbucket-pr-reviewer pr-worktree
-
-# Install with custom prefix
-./install.sh --prefix myteam- --all
-
-# Install without prefix
-./install.sh --prefix "" --all
-
-# Install to current project instead of globally
-./install.sh --local --all
-
-# Preview what would be installed
-./install.sh --dry-run --all
+export BITBUCKET_USERNAME="your-username"
+export BITBUCKET_APP_PASSWORD="your-app-password"
 ```
 
-### Installer Options
-
-| Option | Description |
-|--------|-------------|
-| `--list` | List available skills |
-| `--all` | Install all skills |
-| `--prefix PREFIX` | Set skill name prefix (default: `cdskit-`) |
-| `--global` | Install to `~/.claude/skills/` (default) |
-| `--local` | Install to `./.claude/skills/` |
-| `--dry-run` | Show what would be installed without installing |
-| `--help` | Show help message |
-
-## Uninstallation
-
+**For Bitbucket Server/Data Center:**
 ```bash
-# List installed skills
-./uninstall.sh --list
-
-# Uninstall all skills with default prefix
-./uninstall.sh --all
-
-# Uninstall specific skills
-./uninstall.sh bitbucket-pr-reviewer mcp-setup
-
-# Uninstall with custom prefix
-./uninstall.sh --prefix myteam- --all
-
-# Preview what would be uninstalled
-./uninstall.sh --dry-run --all
+export BITBUCKET_USERNAME="your.email@company.com"
+export BITBUCKET_TOKEN="your-http-access-token"
+export BITBUCKET_BASE_URL="https://bitbucket.yourcompany.com"
 ```
 
-### Uninstaller Options
+Only the server with valid credentials will be active.
 
-| Option | Description |
-|--------|-------------|
-| `--list` | List installed skills |
-| `--all` | Uninstall all skills with current prefix |
-| `--prefix PREFIX` | Set skill name prefix (default: `cdskit-`) |
-| `--global` | Uninstall from `~/.claude/skills/` (default) |
-| `--local` | Uninstall from `./.claude/skills/` |
-| `--dry-run` | Show what would be uninstalled without removing |
-| `--yes`, `-y` | Skip confirmation prompt |
-| `--help` | Show help message |
+### Creating Bitbucket Credentials
 
-### Manual Installation (Copy & Paste)
+**Bitbucket Cloud (App Password):**
+1. Go to https://bitbucket.org/account/settings/app-passwords/
+2. Click "Create app password"
+3. Select permissions: Account (Read), Repositories (Read/Write), Pull requests (Read/Write)
+4. Copy the generated password
 
-Skills come pre-configured with the default `cdskit-` prefix and matching folder names, so you can simply copy them:
-
-```bash
-# Copy skills directly
-cp -r skills/cdskit-mcp-setup ~/.claude/skills/
-cp -r skills/cdskit-git-worktree ~/.claude/skills/
-cp -r skills/cdskit-bitbucket-pr-reviewer ~/.claude/skills/
-```
-
-**Note:** When copying manually, remember to also copy dependencies (e.g., `cdskit-mcp-setup` for `cdskit-bitbucket-pr-reviewer`).
-
-## Skill Prefixes
-
-Skills are installed with a configurable prefix to avoid conflicts with other skills:
-
-| Source | Installed As (default) | Installed As (custom) |
-|--------|------------------------|----------------------|
-| `mcp-setup` | `cdskit-mcp-setup` | `myteam-mcp-setup` |
-| `git-worktree` | `cdskit-git-worktree` | `myteam-git-worktree` |
-| `bitbucket-pr-reviewer` | `cdskit-bitbucket-pr-reviewer` | `myteam-bitbucket-pr-reviewer` |
+**Bitbucket Server (HTTP Access Token):**
+1. Go to your Bitbucket Server profile settings
+2. Navigate to HTTP Access Tokens
+3. Create a token with Repository Read/Write and Pull Request Read/Write permissions
 
 ## Usage
 
-Once installed, invoke skills in Claude Code:
+Once installed, the skills are automatically available in Claude Code:
 
 ```
-# Using skill command (with default prefix)
-/cdskit-bitbucket-pr-reviewer
-
-# Natural language works too
+# Natural language invocation
 "Review PR 123"
-"Help me set up MCP for Bitbucket"
 "Create a worktree for PR 456"
+"Help me inspect branch feature/login"
+
+# Skills are triggered automatically based on context
 ```
 
-## Skill Details
-
-### mcp-setup
-
-Foundation skill for configuring MCP (Model Context Protocol) servers. Includes:
-- MCP concepts and configuration guide
-- Templates for Bitbucket (Cloud and Data Center/Server)
-- Troubleshooting guide
-
-### cdskit-git-worktree
-
-Git utility for creating isolated worktrees. Features:
-- Supports PRs, branches, tags, and commits
-- Cross-platform (macOS, Linux, Windows via Git Bash/WSL)
-- Auto-detects IDE context (VS Code, JetBrains, Claude Code CLI)
-- Bitbucket and GitHub PR refs support
+## Skills
 
 ### bitbucket-pr-reviewer
 
@@ -158,93 +111,74 @@ AI-powered Bitbucket PR review skill. Features:
 - Analyze code for bugs, security, performance issues
 - Post inline comments and suggestions
 - Approve or request changes
+- Supports both Bitbucket Cloud and Data Center/Server
 
-## Project Structure
+**Prerequisites:** Requires a Bitbucket MCP server to be configured.
 
-```
-claude-skills/
-├── install.sh              # Installer script
-├── uninstall.sh            # Uninstaller script
-├── skills.json             # Skills registry
-├── README.md
-└── skills/
-    ├── cdskit-mcp-setup/
-    │   ├── SKILL.md        # Skill instructions
-    │   ├── skill.json      # Skill metadata
-    │   └── templates/      # MCP config templates
-    ├── cdskit-git-worktree/
-    │   ├── SKILL.md
-    │   ├── skill.json
-    │   ├── setup-worktree.sh
-    │   └── cleanup-worktree.sh
-    └── cdskit-bitbucket-pr-reviewer/
-        ├── SKILL.md
-        └── skill.json
-```
+### git-worktree
 
-## Dependency System
+Git utility for creating isolated worktrees. Features:
+- Supports PRs, branches, tags, and commits
+- Cross-platform (macOS, Linux, Windows via Git Bash/WSL)
+- Auto-detects IDE context (VS Code, JetBrains, Claude Code CLI)
+- Bitbucket and GitHub PR refs support
+- Worktree auto-cleanup with confirmation
 
-Skills can declare dependencies in their `skill.json`:
+**Prerequisites:** Git 2.5+ and Bash.
 
-```json
-{
-  "name": "bitbucket-pr-reviewer",
-  "dependencies": {
-    "required": ["mcp-setup"],
-    "optional": ["pr-worktree"]
-  }
-}
+## Development
+
+### Testing the Plugin
+
+```bash
+# Load plugin for development/testing
+claude --plugin-dir ./claude-skills
+
+# Load multiple plugins
+claude --plugin-dir ./claude-skills --plugin-dir ./another-plugin
 ```
 
-The installer automatically resolves and installs dependencies in the correct order.
+### Plugin Environment Variables
+
+In hooks, MCP servers, and skill scripts, use `${CLAUDE_PLUGIN_ROOT}` to reference the plugin directory:
+
+```bash
+"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/setup-worktree.sh" --pr 558
+```
 
 ## Contributing
 
 Contributions are welcome! To add a new skill:
 
 1. Fork this repository
-2. Create a new folder under `skills/` named `cdskit-<your-skill-name>`
-3. Add required files:
-   - `SKILL.md` - Skill definition using `cdskit-` prefix
-   - `skill.json` - Metadata and dependencies
-4. Update `skills.json` registry
+2. Create a new folder under `skills/` named `<your-skill-name>`
+3. Add a `SKILL.md` file with YAML frontmatter and instructions
+4. Update `README.md` with skill documentation
 5. Submit a pull request
 
 ### Skill Template
 
-Create folder: `skills/cdskit-my-skill/`
+Create folder: `skills/my-skill/`
 
 ```yaml
 # SKILL.md
 ---
-name: "cdskit-my-skill"
-description: Short description for skill matching
+name: "my-skill"
+description: Short description for skill matching. Use when user wants to...
 ---
 
-# cdskit-my-skill
+# My Skill
 
-Detailed instructions...
+Detailed instructions for the skill...
 
 ## Prerequisites
 
-If this skill depends on others:
-- Use the `cdskit-mcp-setup` skill for MCP configuration
-```
+List any requirements...
 
-```json
-// skill.json
-{
-  "name": "my-skill",
-  "version": "1.0.0",
-  "description": "What this skill does",
-  "dependencies": {
-    "required": [],
-    "optional": []
-  }
-}
-```
+## Instructions
 
-**Note:** Always use `cdskit-` as the prefix in folder names and file content. The installer will automatically replace it with custom prefixes when users install with `--prefix`.
+Step-by-step instructions for Claude to follow...
+```
 
 ## License
 

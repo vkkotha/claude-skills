@@ -1,9 +1,9 @@
 ---
-name: "cdskit-bitbucket-pr-reviewer"
+name: "bitbucket-pr-reviewer"
 description: Review Bitbucket pull requests with AI-powered analysis and inline comments. Use when user says "review PR", "PR review", or mentions reviewing a Bitbucket pull request.
 ---
 
-# cdskit-bitbucket-pr-reviewer
+# Bitbucket PR Reviewer
 
 Review Bitbucket pull requests using AI-powered analysis with inline comments and code suggestions.
 
@@ -13,17 +13,20 @@ Review Bitbucket pull requests using AI-powered analysis with inline comments an
 
 ### Required: MCP Server Setup
 
-This skill requires a **Bitbucket MCP server** to be configured.
+This skill requires a **Bitbucket MCP server** to be configured. This plugin provides two server configurations:
 
-**Check if MCP tools are available:** Look for tools starting with `mcp__bitbucket__` (e.g., `mcp__bitbucket__get_pull_request`).
+| Server | Tools Prefix | Use When |
+|--------|--------------|----------|
+| `bitbucket-cloud` | `mcp__bitbucket-cloud__` | Using bitbucket.org |
+| `bitbucket-datacenter` | `mcp__bitbucket-datacenter__` | Using Bitbucket Server/Data Center |
 
-**If MCP tools are NOT available:** Use the `cdskit-mcp-setup` skill to configure the Bitbucket MCP server. Choose the appropriate template:
-- `bitbucket-datacenter` - For Bitbucket Data Center/Server
-- `bitbucket-cloud` - For Bitbucket Cloud
+**Check if MCP tools are available:** Look for tools starting with `mcp__bitbucket-cloud__` or `mcp__bitbucket-datacenter__` (e.g., `mcp__bitbucket-cloud__get_pull_request`).
+
+**Determine which server to use** based on available MCP tools or ask the user which Bitbucket platform they're using.
 
 ### Optional: Local Code Inspection
 
-For local code inspection (running tests, deeper analysis), the `cdskit-pr-worktree` skill can create an isolated git worktree.
+For local code inspection (running tests, deeper analysis), the `git-worktree` skill can create an isolated git worktree.
 
 ## Instructions
 
@@ -94,7 +97,7 @@ mcp__bitbucket__list_pr_commits(
 
 ### Step 5: Setup Local Worktree (Optional)
 
-If the user wants to inspect code locally or run tests, use the `cdskit-pr-worktree` skill to create an isolated worktree.
+If the user wants to inspect code locally or run tests, use the `git-worktree` skill to create an isolated worktree.
 
 ### Step 6: Generate PR Review
 
@@ -204,7 +207,7 @@ mcp__bitbucket__request_changes(
 
 ### Step 9: Cleanup (Optional)
 
-If a worktree was created, offer to clean it up using the `cdskit-pr-worktree` skill.
+If a worktree was created, offer to clean it up using the `git-worktree` skill.
 
 ## Review Output Format
 
@@ -271,7 +274,7 @@ If a worktree was created, offer to clean it up using the `cdskit-pr-worktree` s
 
 ### MCP Tools Not Available
 
-Use the `cdskit-mcp-setup` skill to configure the Bitbucket MCP server.
+Configure the Bitbucket MCP server in your Claude Code MCP settings.
 
 ### Authentication Errors
 

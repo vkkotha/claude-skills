@@ -1,9 +1,9 @@
 ---
-name: "cdskit-git-worktree"
+name: "git-worktree"
 description: Create isolated git worktrees for reviewing pull requests, branches, tags, or commits. Use when user wants to checkout code locally, inspect a ref in isolation, or set up a separate workspace for code review.
 ---
 
-# cdskit-git-worktree
+# Git Worktree
 
 Create isolated **git worktrees** for reviewing pull requests, branches, tags, or commits without affecting your main working directory.
 
@@ -28,17 +28,14 @@ A git worktree allows you to check out multiple branches/refs simultaneously in 
 When the user wants to inspect code locally, **run the setup script** with the appropriate ref type. The script auto-detects the IDE context and opens appropriately:
 
 ```bash
-# macOS/Linux (global install)
-"$HOME/.claude/skills/cdskit-git-worktree/setup-worktree.sh" --pr <NUMBER>
-"$HOME/.claude/skills/cdskit-git-worktree/setup-worktree.sh" --branch <NAME>
-"$HOME/.claude/skills/cdskit-git-worktree/setup-worktree.sh" --tag <NAME>
-"$HOME/.claude/skills/cdskit-git-worktree/setup-worktree.sh" --commit <SHA>
-
-# Local install (if using --local during installation)
-./.claude/skills/cdskit-git-worktree/setup-worktree.sh --pr <NUMBER>
+# Using plugin scripts
+"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/setup-worktree.sh" --pr <NUMBER>
+"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/setup-worktree.sh" --branch <NAME>
+"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/setup-worktree.sh" --tag <NAME>
+"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/setup-worktree.sh" --commit <SHA>
 
 # Windows CMD/PowerShell (with Git Bash)
-bash "%USERPROFILE%\.claude\skills\cdskit-git-worktree\setup-worktree.sh" --pr <NUMBER>
+bash "${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/setup-worktree.sh" --pr <NUMBER>
 ```
 
 ### Script Arguments
@@ -66,16 +63,16 @@ The script automatically detects your IDE context:
 
 ```bash
 # PR worktree (auto-detects IDE and opens)
-./setup-worktree.sh --pr 558
+"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/setup-worktree.sh" --pr 558
 
 # Branch worktree with specific editor override
-./setup-worktree.sh --branch feature/login --editor-cmd idea
+"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/setup-worktree.sh" --branch feature/login --editor-cmd idea
 
 # Tag worktree, no editor
-./setup-worktree.sh --tag v1.2.3 --editor skip
+"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/setup-worktree.sh" --tag v1.2.3 --editor skip
 
 # Commit worktree, force Claude Code CLI
-./setup-worktree.sh --commit abc123def --editor-cmd claude
+"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/setup-worktree.sh" --commit abc123def --editor-cmd claude
 ```
 
 ### What the Script Does
@@ -122,13 +119,13 @@ When the user is in a worktree and wants to go back to the main repository (e.g.
 
 ```bash
 # Auto-detects IDE and opens main worktree
-"$HOME/.claude/skills/cdskit-git-worktree/open-main-worktree.sh"
+"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/open-main-worktree.sh"
 
 # Skip opening, just show path
-"$HOME/.claude/skills/cdskit-git-worktree/open-main-worktree.sh" skip
+"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/open-main-worktree.sh" skip
 
 # Force specific editor
-"$HOME/.claude/skills/cdskit-git-worktree/open-main-worktree.sh" auto idea
+"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/open-main-worktree.sh" auto idea
 ```
 
 **How it works:** Git tracks the main worktree (the original clone location) and `git worktree list` always shows it first. This works from any worktree in the same repository.
@@ -138,14 +135,14 @@ When the user is in a worktree and wants to go back to the main repository (e.g.
 After the review is complete, clean up with:
 
 ```bash
-# macOS/Linux (global install)
-"$HOME/.claude/skills/cdskit-git-worktree/cleanup-worktree.sh" --pr <NUMBER>
-"$HOME/.claude/skills/cdskit-git-worktree/cleanup-worktree.sh" --branch <NAME>
-"$HOME/.claude/skills/cdskit-git-worktree/cleanup-worktree.sh" --tag <NAME>
-"$HOME/.claude/skills/cdskit-git-worktree/cleanup-worktree.sh" --commit <SHA>
+# Clean up worktrees
+"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/cleanup-worktree.sh" --pr <NUMBER>
+"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/cleanup-worktree.sh" --branch <NAME>
+"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/cleanup-worktree.sh" --tag <NAME>
+"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/cleanup-worktree.sh" --commit <SHA>
 
 # Windows CMD/PowerShell (with Git Bash)
-bash "%USERPROFILE%\.claude\skills\cdskit-git-worktree\cleanup-worktree.sh" --pr <NUMBER>
+bash "${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/cleanup-worktree.sh" --pr <NUMBER>
 ```
 
 **Options:**
@@ -178,7 +175,7 @@ wsl bash ./script.sh <args>
 ### Script Not Executable
 
 ```bash
-chmod +x ./.claude/skills/cdskit-git-worktree/*.sh
+chmod +x "${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/"*.sh
 ```
 
 ### Ref Not Found
@@ -198,7 +195,7 @@ chmod +x ./.claude/skills/cdskit-git-worktree/*.sh
 
 2. Use `--editor skip` and open manually:
    ```bash
-   ./setup-worktree.sh --pr 558 --editor skip
+   "${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/setup-worktree.sh" --pr 558 --editor skip
    cd ../myproject.worktrees/PR-558
    code .   # or: idea . / claude
    ```
@@ -224,11 +221,11 @@ git worktree prune
 
 | Action | Command |
 |--------|---------|
-| Setup PR worktree | `./setup-worktree.sh --pr 558` |
-| Setup branch worktree | `./setup-worktree.sh --branch feature/x` |
-| Setup tag worktree | `./setup-worktree.sh --tag v1.0.0` |
-| Setup commit worktree | `./setup-worktree.sh --commit abc123` |
-| Open main worktree | `./open-main-worktree.sh` |
-| Cleanup worktree | `./cleanup-worktree.sh --pr 558` |
+| Setup PR worktree | `"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/setup-worktree.sh" --pr 558` |
+| Setup branch worktree | `"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/setup-worktree.sh" --branch feature/x` |
+| Setup tag worktree | `"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/setup-worktree.sh" --tag v1.0.0` |
+| Setup commit worktree | `"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/setup-worktree.sh" --commit abc123` |
+| Open main worktree | `"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/open-main-worktree.sh"` |
+| Cleanup worktree | `"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/cleanup-worktree.sh" --pr 558` |
 | List worktrees | `git worktree list` |
 | Prune stale | `git worktree prune` |

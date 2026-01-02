@@ -1,0 +1,13 @@
+{
+  "name": "claude-skills-marketplace",
+  "owner": {
+    "name": "vkkotha"
+  },
+  "plugins": [
+    {
+      "name": "claude-skills",
+      "source": "./",
+      "description": "Developer productivity skills for Claude Code - Bitbucket PR review and git worktree management"
+    }
+  ]
+}
