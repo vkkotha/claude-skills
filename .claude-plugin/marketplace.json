@@ -1,13 +1,28 @@
 {
-  "name": "claude-skills-marketplace",
+  "name": "cdskit-marketplace",
   "owner": {
     "name": "vkkotha"
   },
   "plugins": [
     {
-      "name": "claude-skills",
-      "source": "./",
-      "description": "Developer productivity skills for Claude Code - Bitbucket PR review and git worktree management"
+      "name": "git-plugin",
+      "source": "./git-plugin/",
+      "description": "Git worktree skill - Create isolated worktrees for PRs, branches, tags, or commits"
+    },
+    {
+      "name": "bitbucket-plugin",
+      "source": "./bitbucket-plugin/",
+      "description": "Bitbucket Cloud PR operations - List, review, and manage pull requests on Bitbucket Cloud (bitbucket.org)"
+    },
+    {
+      "name": "bitbucket-datacenter-plugin",
+      "source": "./bitbucket-datacenter-plugin/",
+      "description": "Bitbucket Data Center PR operations - List, review, and manage pull requests on self-hosted Bitbucket Server/Data Center"
+    },
+    {
+      "name": "github-plugin",
+      "source": "./github-plugin/",
+      "description": "GitHub PR operations - List, review, and manage pull requests on GitHub"
     }
   ]
 }

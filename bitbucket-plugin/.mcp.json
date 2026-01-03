@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "bitbucket": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "https://github.com/vkkotha/bitbucket-mcp-server/releases/latest/download/bitbucket-mcp-server.tgz"
+      ],
+      "env": {
+        "BITBUCKET_USERNAME": "${BITBUCKET_USERNAME}",
+        "BITBUCKET_APP_PASSWORD": "${BITBUCKET_APP_PASSWORD}"
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "bitbucket-plugin",
+  "version": "1.0.0",
+  "description": "Bitbucket Cloud PR operations skill for Claude Code - List, review, and manage pull requests on Bitbucket Cloud (bitbucket.org). Auto-detects repository platform and redirects to appropriate skill if not Bitbucket Cloud.",
+  "author": {
+    "name": "vkkotha"
+  },
+  "repository": "https://github.com/vkkotha/claude-skills",
+  "license": "MIT",
+  "keywords": [
+    "bitbucket",
+    "bitbucket-cloud",
+    "pr-review",
+    "code-review",
+    "mcp",
+    "auto-detect"
+  ],
+  "skills": ["./skills/"],
+  "mcpServers": "./.mcp.json"
+}

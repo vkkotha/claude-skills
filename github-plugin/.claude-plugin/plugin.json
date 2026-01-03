@@ -1,0 +1,19 @@
+{
+  "name": "github-plugin",
+  "version": "1.0.0",
+  "description": "GitHub PR operations skill for Claude Code - List, review, and manage pull requests on GitHub. Auto-detects repository platform and redirects to appropriate skill if not GitHub.",
+  "author": {
+    "name": "vkkotha"
+  },
+  "repository": "https://github.com/vkkotha/claude-skills",
+  "license": "MIT",
+  "keywords": [
+    "github",
+    "pr-review",
+    "code-review",
+    "mcp",
+    "auto-detect"
+  ],
+  "skills": ["./skills/"],
+  "mcpServers": "./.mcp.json"
+}

@@ -1,0 +1,22 @@
+{
+  "name": "bitbucket-datacenter-plugin",
+  "version": "1.0.0",
+  "description": "Bitbucket Data Center PR operations skill for Claude Code - List, review, and manage pull requests on self-hosted Bitbucket Server/Data Center. Auto-detects repository platform and redirects to appropriate skill if not Bitbucket Data Center.",
+  "author": {
+    "name": "vkkotha"
+  },
+  "repository": "https://github.com/vkkotha/claude-skills",
+  "license": "MIT",
+  "keywords": [
+    "bitbucket",
+    "bitbucket-datacenter",
+    "bitbucket-server",
+    "stash",
+    "pr-review",
+    "code-review",
+    "mcp",
+    "auto-detect"
+  ],
+  "skills": ["./skills/"],
+  "mcpServers": "./.mcp.json"
+}

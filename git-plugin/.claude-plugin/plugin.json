@@ -1,0 +1,16 @@
+{
+  "name": "git-plugin",
+  "version": "1.0.0",
+  "description": "Git worktree skill for Claude Code - Create isolated worktrees for PRs, branches, tags, or commits",
+  "author": {
+    "name": "vkkotha"
+  },
+  "repository": "https://github.com/vkkotha/claude-skills",
+  "license": "MIT",
+  "keywords": [
+    "git",
+    "worktree",
+    "code-review"
+  ],
+  "skills": ["./skills/"]
+}
