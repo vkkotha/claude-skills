@@ -1,12 +1,12 @@
 # Claude Skills
 
-A Claude Code plugin providing developer productivity skills for Bitbucket PR review and git worktree management.
+A Claude Code plugin providing developer productivity skills for GitHub, Bitbucket PR review, and git worktree management.
 
 ## Available Skills
 
 | Skill | Description |
 |-------|-------------|
-| [bitbucket-pr-reviewer](./skills/bitbucket-pr-reviewer/) | Review Bitbucket PRs with AI-powered analysis and inline comments |
+| [pr-operations](./skills/pr-operations/) | Unified PR operations across GitHub, Bitbucket Cloud, and Bitbucket Data Center |
 | [git-worktree](./skills/git-worktree/) | Create isolated git worktrees for PRs, branches, tags, or commits |
 
 ## Installation
@@ -41,14 +41,35 @@ After installing, run the help command for detailed configuration instructions:
 /claude-skills:help
 ```
 
-**Important:** This plugin includes two Bitbucket MCP servers. Disable the one you don't need:
+**Important:** This plugin includes MCP servers for GitHub and Bitbucket. Disable the ones you don't need:
 
 1. Run `/mcp` in Claude Code
-2. Toggle off the server you don't use:
+2. Toggle off the servers you don't use:
+   - `github` - For GitHub (github.com)
    - `bitbucket-cloud` - For Bitbucket Cloud (bitbucket.org)
    - `bitbucket-datacenter` - For self-hosted Bitbucket Server
 
 ## Configuration
+
+### GitHub MCP Server
+
+This plugin includes the official [GitHub MCP server](https://github.com/github/github-mcp-server) for interacting with GitHub repositories, issues, and pull requests.
+
+| Server | Use Case | MCP Tools Prefix |
+|--------|----------|------------------|
+| `github` | GitHub (github.com) | `mcp__github__` |
+
+**Setup:**
+```bash
+export GITHUB_PERSONAL_ACCESS_TOKEN="your-token"
+```
+
+**Creating a GitHub Personal Access Token:**
+1. Go to https://github.com/settings/tokens
+2. Click "Generate new token" (classic or fine-grained)
+3. For classic tokens, select scopes: `repo`, `read:org`, `read:user`
+4. For fine-grained tokens, grant access to the repositories you need
+5. Copy the generated token
 
 ### Bitbucket MCP Server
 
@@ -104,16 +125,17 @@ Once installed, the skills are automatically available in Claude Code:
 
 ## Skills
 
-### bitbucket-pr-reviewer
+### pr-operations
 
-AI-powered Bitbucket PR review skill. Features:
+Unified pull request operations across multiple VCS platforms. Features:
+- Auto-detects platform from git remote (GitHub, Bitbucket Cloud, Bitbucket Data Center)
+- List PRs in table format with status icons
 - Fetch PR details and diffs via MCP
-- Analyze code for bugs, security, performance issues
+- AI-powered code review for bugs, security, performance issues
 - Post inline comments and suggestions
-- Approve or request changes
-- Supports both Bitbucket Cloud and Data Center/Server
+- Approve, request changes, or merge PRs
 
-**Prerequisites:** Requires a Bitbucket MCP server to be configured.
+**Prerequisites:** Requires the appropriate MCP server for your platform (GitHub, Bitbucket Cloud, or Bitbucket Data Center).
 
 ### git-worktree
 

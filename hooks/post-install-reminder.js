@@ -6,13 +6,18 @@ const message = `
   Claude Skills Plugin - Configuration Reminder
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  This plugin includes two Bitbucket MCP servers. Please:
+  This plugin includes MCP servers for GitHub and Bitbucket. Please:
 
-  1. DISABLE the server you don't need (use /mcp command)
+  1. DISABLE the servers you don't need (use /mcp command)
+     - github               → For GitHub (github.com)
      - bitbucket-cloud      → For Bitbucket Cloud (bitbucket.org)
      - bitbucket-datacenter → For self-hosted Bitbucket Server
 
   2. SET required environment variables:
+
+     For GitHub:
+       export GITHUB_PERSONAL_ACCESS_TOKEN="your-token"
+       (Create at: https://github.com/settings/tokens)
 
      For Bitbucket Cloud:
        export BITBUCKET_USERNAME="your-username"
