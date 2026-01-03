@@ -1,50 +1,23 @@
 ---
 name: "git-worktree"
-description: Create isolated git worktrees for reviewing pull requests, branches, tags, or commits. Use when user wants to checkout code locally, inspect a ref in isolation, or set up a separate workspace for code review.
+description: "Create isolated git worktrees for reviewing PRs, branches, tags, or commits without affecting main working directory."
 ---
 
 # Git Worktree
 
-Create isolated git worktrees for reviewing PRs, branches, tags, or commits without affecting the main working directory.
-
 ## Scripts
 
-### Setup Worktree
+**Setup:** `"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/setup-worktree.sh" --pr|--branch|--tag|--commit <VALUE>`
+Options: `--editor skip` | `--editor-cmd <code|idea|claude>`
 
-```bash
-"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/setup-worktree.sh" --pr <NUMBER>
-"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/setup-worktree.sh" --branch <NAME>
-"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/setup-worktree.sh" --tag <NAME>
-"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/setup-worktree.sh" --commit <SHA>
-```
+**Open main:** `"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/open-main-worktree.sh"`
 
-**Options:** `--editor skip` (don't open IDE) | `--editor-cmd <code|idea|claude>` (override IDE)
-
-### Open Main Worktree
-
-```bash
-"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/open-main-worktree.sh"
-```
-
-### Cleanup Worktree
-
-```bash
-"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/cleanup-worktree.sh" --pr <NUMBER>
-"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/cleanup-worktree.sh" --branch <NAME>
-```
-
-**Options:** `--yes` or `-y` (skip confirmation)
-
----
+**Cleanup:** `"${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/cleanup-worktree.sh" --pr|--branch <VALUE>`
+Options: `--yes` or `-y` (skip confirmation)
 
 ## Behavior
 
-- **Worktrees created at:** `../<project>.worktrees/<folder-name>`
-- **IDE auto-detection:** Opens in VS Code, JetBrains, or Claude CLI based on context
-- **Branch handling:**
-  - Local branches: used directly
-  - Remote branches: creates `worktree-branch-<name>`
-  - PRs: creates `worktree-pr-<number>`
-  - Tags/Commits: detached HEAD
-
-**Windows:** Prefix commands with `bash` (requires Git Bash)
+- Location: `../<project>.worktrees/<folder-name>`
+- IDE auto-detection: VS Code, JetBrains, or Claude CLI
+- Branch handling: local branches used directly, remote → `worktree-branch-<name>`, PRs → `worktree-pr-<number>`, tags/commits → detached HEAD
+- Windows: prefix with `bash` (requires Git Bash)

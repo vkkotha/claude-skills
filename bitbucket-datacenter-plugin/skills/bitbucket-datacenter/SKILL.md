@@ -1,76 +1,31 @@
 ---
 name: "bitbucket-datacenter"
-description: "Handle Bitbucket Data Center/Server pull request operations. Use when user mentions \"PR\", \"pull request\", \"review\", \"list PRs\", \"get PRs\", \"non-draft PRs\", \"open PRs\", or any PR-related operation and the repository is hosted on self-hosted Bitbucket Server or Data Center."
+description: "Handle Bitbucket Data Center/Server PR operations. Use for \"PR\", \"pull request\", \"review\" when repo is on self-hosted Bitbucket (NOT bitbucket.org)."
 ---
 
 # Bitbucket Data Center PR Operations
 
-Use the `mcp__plugin_bitbucket-datacenter-plugin__*` MCP tools for all Bitbucket Data Center operations. Claude Code will automatically select the appropriate tool based on your request.
+Use `mcp__plugin_bitbucket-datacenter-plugin__*` MCP tools.
 
-## Step 1: Auto-Detect Git Platform (REQUIRED FIRST STEP)
+## Step 1: Detect Platform (REQUIRED)
 
-**Before any PR operation**, detect the git platform:
+Run `git remote -v` to identify platform:
+- `bitbucket.<company>.com` or custom domain → ✅ Bitbucket DC (continue)
+- `bitbucket.org` → Use `bitbucket-cloud` skill
+- `github.com` → Use `github-pr` skill
 
-```bash
-git remote -v
-```
+**Extract from URL:**
+- SSH: `git@bitbucket.company.com:7999/PROJ/repo.git` → workspace=`PROJ`, repo=`repo`
+- HTTPS: `https://bitbucket.company.com/scm/PROJ/repo.git` → workspace=`PROJ`, repo=`repo`
 
-**Platform Detection:**
+## Output Format
 
-| Remote URL Pattern | Platform | Action |
-|-------------------|----------|--------|
-| `bitbucket.<company>.com` or custom domain (NOT `bitbucket.org`) | **Bitbucket Data Center** | ✅ Continue |
-| `bitbucket.org` | Bitbucket Cloud | ❌ Use `bitbucket-cloud` skill |
-| `github.com` | GitHub | ❌ Use `github-pr` skill |
-| `gitlab.com` | GitLab | ❌ Not supported |
+List PRs as table: `| # | Title | Author | Branch | Status | Updated |`
+Status: ✅ Open | 📝 Draft | 🔀 Merged | ❌ Declined
 
-**Extract project key and repository from the remote URL:**
+## PR Review
 
-| Format | Example | Project Key | Repo |
-|--------|---------|-------------|------|
-| SSH | `git@bitbucket.company.com:7999/PROJ/repo.git` | `PROJ` | `repo` |
-| HTTPS | `https://bitbucket.company.com/scm/PROJ/repo.git` | `PROJ` | `repo` |
-
----
-
-## Output Formatting
-
-When listing PRs, display results in a markdown table:
-
-| # | Title | Author | Branch | Status | Updated |
-|---|-------|--------|--------|--------|---------|
-| 123 | Fix auth bug | @user | feature/auth → main | ✅ Open | 2 hours ago |
-
-**Status icons:** ✅ Open | 📝 Draft | 🔀 Merged | ❌ Declined
-
----
-
-## PR Review Workflow
-
-When reviewing a PR:
-
-1. **Fetch PR details and diff**
-2. **Analyze for:**
-   - Code correctness & bugs (logic errors, null handling, edge cases)
-   - Security vulnerabilities (injection, secrets exposure)
-   - Performance concerns (N+1 queries, memory leaks)
-   - Code quality (style, naming, DRY/SOLID)
-
-3. **Present review:**
-
-```markdown
-## PR Review: #<NUMBER> - <TITLE>
-
-**Author:** <author> | **Branch:** <source> → <destination> | **Status:** <status>
-
-### Summary
-<Brief description>
-
-### Issues Found
-- **[file:line]** <issue description>
-
-### Verdict
-**<APPROVE | REQUEST_CHANGES | COMMENT>**
-```
-
-4. **Post comments/approve/request changes** if requested by user
+1. Fetch PR details + diff
+2. Analyze: bugs, security, performance, code quality
+3. Present: `## PR Review: #<NUM> - <TITLE>` with Summary, Issues Found (`[file:line]`), Verdict (APPROVE/REQUEST_CHANGES/COMMENT)
+4. Post comments/approve if requested

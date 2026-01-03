@@ -1,87 +1,37 @@
 ---
 name: "github-pr"
-description: "Handle GitHub pull request operations. Use when user mentions \"PR\", \"pull request\", \"review\", \"list PRs\", \"get PRs\", \"non-draft PRs\", \"open PRs\", or any PR-related operation and the repository is hosted on GitHub. This skill provides consistent output formatting and workflow for GitHub PRs."
+description: "Handle GitHub PR operations. Use for \"PR\", \"pull request\", \"review\" when repo is on github.com."
 ---
 
 # GitHub PR Operations
 
-Use the `mcp__plugin_github-plugin__*` MCP tools for all GitHub operations. Claude Code will automatically select the appropriate tool based on your request.
+Use `mcp__plugin_github-plugin__*` MCP tools.
 
-## Step 1: Auto-Detect Git Platform (REQUIRED FIRST STEP)
+## Step 1: Detect Platform (REQUIRED)
 
-**Before any PR operation**, detect the git platform:
+Run `git remote -v` to identify platform:
+- `github.com` → ✅ GitHub (continue)
+- `bitbucket.org` → Use `bitbucket-cloud` skill
+- `bitbucket.<company>.com` or custom domain → Use `bitbucket-datacenter` skill
 
-```bash
-git remote -v
-```
+**Extract from URL:**
+- SSH: `git@github.com:owner/repo.git` → owner=`owner`, repo=`repo`
+- HTTPS: `https://github.com/owner/repo.git` → owner=`owner`, repo=`repo`
 
-**Platform Detection:**
+## Output Format
 
-| Remote URL Pattern | Platform | Action |
-|-------------------|----------|--------|
-| `github.com` | **GitHub** | ✅ Continue |
-| `bitbucket.org` | Bitbucket Cloud | ❌ Use `bitbucket-cloud` skill |
-| `bitbucket.<company>.com` or custom domain | Bitbucket Data Center | ❌ Use `bitbucket-datacenter` skill |
-| `gitlab.com` | GitLab | ❌ Not supported |
+List PRs as table: `| # | Title | Author | Branch | Status | Updated |`
+Status: ✅ Open | 📝 Draft | 🔀 Merged | ❌ Closed
 
-**Extract owner and repository from the remote URL:**
+To exclude drafts, use search with `draft:false`.
 
-| Format | Example | Owner | Repo |
-|--------|---------|-------|------|
-| SSH | `git@github.com:owner/repo.git` | `owner` | `repo` |
-| HTTPS | `https://github.com/owner/repo.git` | `owner` | `repo` |
+## PR Review
 
----
+1. Fetch PR details + diff
+2. Analyze: bugs, security, performance, code quality
+3. Present: `## PR Review: #<NUM> - <TITLE>` with Summary, Issues Found (`[file:line]`), Verdict (APPROVE/REQUEST_CHANGES/COMMENT)
+4. Post comments/approve if requested
 
-## Output Formatting
+## Inline Review Comments
 
-When listing PRs, display results in a markdown table:
-
-| # | Title | Author | Branch | Status | Updated |
-|---|-------|--------|--------|--------|---------|
-| 123 | Fix auth bug | @user | feature/auth → main | ✅ Open | 2 hours ago |
-
-**Status icons:** ✅ Open | 📝 Draft | 🔀 Merged | ❌ Closed
-
-**To exclude drafts**, use search with `draft:false` in the query.
-
----
-
-## PR Review Workflow
-
-When reviewing a PR:
-
-1. **Fetch PR details and diff**
-2. **Analyze for:**
-   - Code correctness & bugs (logic errors, null handling, edge cases)
-   - Security vulnerabilities (injection, secrets exposure)
-   - Performance concerns (N+1 queries, memory leaks)
-   - Code quality (style, naming, DRY/SOLID)
-
-3. **Present review:**
-
-```markdown
-## PR Review: #<NUMBER> - <TITLE>
-
-**Author:** <author> | **Branch:** <source> → <destination> | **Status:** <status>
-
-### Summary
-<Brief description>
-
-### Issues Found
-- **[file:line]** <issue description>
-
-### Verdict
-**<APPROVE | REQUEST_CHANGES | COMMENT>**
-```
-
-4. **Post comments/approve/request changes** if requested by user
-
----
-
-## Review Comments Workflow
-
-For reviews with inline comments:
-1. Create a pending review first
-2. Add inline comments to the pending review
-3. Submit the pending review with a verdict
+For reviews with inline comments: create pending review → add inline comments → submit with verdict.
