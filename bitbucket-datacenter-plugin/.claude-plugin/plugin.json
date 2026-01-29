@@ -1,6 +1,6 @@
 {
   "name": "bitbucket-datacenter-plugin",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Bitbucket Data Center PR operations skill for Claude Code - List, review, and manage pull requests on self-hosted Bitbucket Server/Data Center. Auto-detects repository platform and redirects to appropriate skill if not Bitbucket Data Center.",
   "author": {
     "name": "vkkotha"

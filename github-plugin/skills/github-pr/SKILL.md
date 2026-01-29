@@ -5,33 +5,49 @@ description: "Handle GitHub PR operations. Use for \"PR\", \"pull request\", \"r
 
 # GitHub PR Operations
 
-Use `mcp__plugin_github-plugin__*` MCP tools.
+## Platform Detection
 
-## Step 1: Detect Platform (REQUIRED)
+Run `git remote -v` to verify this is GitHub (github.com):
+- SSH format: `git@github.com:owner/repo.git`
+- HTTPS format: `https://github.com/owner/repo.git`
+- Extract: owner = `owner`, repository = `repo`
 
-Run `git remote -v` to identify platform:
-- `github.com` → ✅ GitHub (continue)
-- `bitbucket.org` → Use `bitbucket-cloud` skill
-- `bitbucket.<company>.com` or custom domain → Use `bitbucket-datacenter` skill
+## Status Indicators
 
-**Extract from URL:**
-- SSH: `git@github.com:owner/repo.git` → owner=`owner`, repo=`repo`
-- HTTPS: `https://github.com/owner/repo.git` → owner=`owner`, repo=`repo`
+When listing or displaying PRs, use these status emojis based on PR state:
+
+| Condition | Status |
+|-----------|--------|
+| Draft | 📝 Draft |
+| Open | ✅ Open |
+| Merged | 🔀 Merged |
+| Closed | ❌ Closed |
+
+**Note:** Use search filter `draft:false` to exclude drafts when listing.
 
 ## Output Format
 
-List PRs as table: `| # | Title | Author | Branch | Status | Updated |`
-Status: ✅ Open | 📝 Draft | 🔀 Merged | ❌ Closed
+Display PRs in a table with columns: `| # | Title | Author | Branch | Status | Updated |`
 
-To exclude drafts, use search with `draft:false`.
+Example:
+```
+| 123 | Add authentication feature | alice | feature/auth | ✅ Open | 1/22/2026 |
+| 122 | Update dependencies | bob | chore/deps | 📝 Draft | 1/20/2026 |
+```
 
 ## PR Review
 
-1. Fetch PR details + diff
-2. Analyze: bugs, security, performance, code quality
-3. Present: `## PR Review: #<NUM> - <TITLE>` with Summary, Issues Found (`[file:line]`), Verdict (APPROVE/REQUEST_CHANGES/COMMENT)
-4. Post comments/approve if requested
+When reviewing a PR:
+1. Fetch PR details and diff
+2. Analyze for bugs, security issues, performance, and code quality
+3. Present findings as: `## PR Review: #<NUM> - <TITLE>`
+4. List issues with file references: `file_path:line_number`
+5. Provide verdict: APPROVE, REQUEST_CHANGES, or COMMENT
+6. Post comments/approve via MCP tools if requested
 
 ## Inline Review Comments
 
-For reviews with inline comments: create pending review → add inline comments → submit with verdict.
+For multi-line inline comments:
+1. Create pending review
+2. Add inline comments to specific lines
+3. Submit review with verdict

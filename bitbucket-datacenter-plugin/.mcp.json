@@ -4,7 +4,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "https://github.com/vkkotha/bitbucket-mcp-server/releases/latest/download/bitbucket-mcp-server.tgz"
+        "https://github.com/vkkotha/bitbucket-mcp-server/releases/download/v1.1.0/bitbucket-mcp-server.tgz"
       ],
       "env": {
         "BITBUCKET_USERNAME": "${BITBUCKET_USERNAME}",

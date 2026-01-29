@@ -6,26 +6,40 @@ description: "Handle Bitbucket Data Center/Server PR operations. Use for \"PR\",
 # Bitbucket Data Center PR Operations
 
 Use `mcp__plugin_bitbucket-datacenter-plugin__*` MCP tools.
+## Platform Detection (REQUIRED)
 
-## Step 1: Detect Platform (REQUIRED)
+Run `git remote -v` to verify this is Bitbucket Data Center (self-hosted, not bitbucket.org):
+- SSH format: `git@bitbucket.company.com:7999/PROJ/repo.git`
+- HTTPS format: `https://bitbucket.company.com/scm/PROJ/repo.git`
+- Extract: workspace = `PROJ`, repository = `repo`
 
-Run `git remote -v` to identify platform:
-- `bitbucket.<company>.com` or custom domain → ✅ Bitbucket DC (continue)
-- `bitbucket.org` → Use `bitbucket-cloud` skill
-- `github.com` → Use `github-pr` skill
+## Status Indicators
 
-**Extract from URL:**
-- SSH: `git@bitbucket.company.com:7999/PROJ/repo.git` → workspace=`PROJ`, repo=`repo`
-- HTTPS: `https://bitbucket.company.com/scm/PROJ/repo.git` → workspace=`PROJ`, repo=`repo`
+When listing or displaying PRs, use these status emojis based on PR state:
+
+| Condition | Status |
+|-----------|--------|
+| `is_draft === true` | 📝 Draft |
+| `state === "MERGED"` | 🔀 Merged |
+| `state === "DECLINED"` | ❌ Declined |
+| `state === "OPEN"` | ✅ Open |
 
 ## Output Format
 
-List PRs as table: `| # | Title | Author | Branch | Status | Updated |`
-Status: ✅ Open | 📝 Draft | 🔀 Merged | ❌ Declined
+Display PRs in a table with columns: `| # | Title | Author | Branch | Status | Updated |`
+
+Example:
+```
+| 549 | PCM-15125: integrated ray cluster | Brindha T | PCM-15125 | ✅ Open | 1/22/2026 |
+| 566 | campaign_post_processor updates | Brindha T | PCM-14672 | 📝 Draft | 12/23/2025 |
+```
 
 ## PR Review
 
-1. Fetch PR details + diff
-2. Analyze: bugs, security, performance, code quality
-3. Present: `## PR Review: #<NUM> - <TITLE>` with Summary, Issues Found (`[file:line]`), Verdict (APPROVE/REQUEST_CHANGES/COMMENT)
-4. Post comments/approve if requested
+When reviewing a PR:
+1. Fetch PR details and diff
+2. Analyze for bugs, security issues, performance, and code quality
+3. Present findings as: `## PR Review: #<NUM> - <TITLE>`
+4. List issues with file references: `file_path:line_number`
+5. Provide verdict: APPROVE, REQUEST_CHANGES, or COMMENT
+6. Post comments/approve via MCP tools if requested
